@@ -11,6 +11,58 @@
     "reason_authority": "UN",
     "approval_authority": "CJTF",
     "remarks": "UNESCO World Heritage Site; protected cultural heritage site in Tadmur (Palmyra), Syria. Coordinates reference the archaeological core."
+  },
+  {
+    "nsl_id": "002",
+    "name": "Damascus Opera House",
+    "category": "Cultural Institutions",
+    "mgrs": "37SBT 47192 11420",
+    "lat": 33.512486,
+    "lon": 36.278294,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "UN",
+    "approval_authority": "CJTF",
+    "remarks": "Damascus Opera House (Dar al-Assad) cultural institution in Damascus, Syria."
+  },
+  {
+    "nsl_id": "003",
+    "name": "Damascus East District Hospital",
+    "category": "Public Health and Welfare Sites",
+    "mgrs": "37SBT 54250 12412",
+    "lat": 33.523072,
+    "lon": 36.353933,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "UN",
+    "approval_authority": "CJTF",
+    "remarks": "Civilian hospital in eastern Damascus; protected public health site."
+  },
+  {
+    "nsl_id": "004",
+    "name": "Damascus West District Hospital",
+    "category": "Public Health and Welfare Sites",
+    "mgrs": "37SBT 42963 05180",
+    "lat": 33.455261,
+    "lon": 36.234603,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "UN",
+    "approval_authority": "CJTF",
+    "remarks": "Civilian hospital in western Damascus; protected public health site."
+  },
+  {
+    "nsl_id": "005",
+    "name": "Damascus South District Hospital",
+    "category": "Public Health and Welfare Sites",
+    "mgrs": "37SBT 50130 07615",
+    "lat": 33.4789,
+    "lon": 36.310961,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "UN",
+    "approval_authority": "CJTF",
+    "remarks": "Civilian hospital in southern Damascus; protected public health site."
   }
 ]
 
