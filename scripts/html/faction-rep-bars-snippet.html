@@ -40,10 +40,11 @@
     function el(tag, props, kids){ var d=document.createElement(tag); if(props){ for(var k in props){ if(k==='class') d.className=props[k]; else if(k==='text') d.textContent=props[k]; else d.setAttribute(k, props[k]); } } if(kids){ for(var i=0;i<kids.length;i++){ var c=kids[i]; d.appendChild(typeof c==='string'?document.createTextNode(c):c); } } return d; }
 
     function render(container, factions){
+      var list = Array.isArray(factions) ? factions : [];
       var root = el('div', { class: 'rep' });
-      var header = el('div', { class: 'hdr' }, [ el('div', { class: 'title', text: 'Faction Reputation' }), el('span', { class: 'count', text: factions.length + ' factions' }) ]);
+      var header = el('div', { class: 'hdr' }, [ el('div', { class: 'title', text: 'Faction Reputation' }), el('span', { class: 'count', text: list.length + ' factions' }) ]);
       var card = el('div', { class: 'card' }, [ header ]);
-      factions.forEach(function(f){
+      list.forEach(function(f){
         var name = f.name || 'Faction';
         var icon = f.icon || '';
         var rep = clamp(Math.round(Number(f.reputation)||0), -100, 100);
@@ -100,8 +101,8 @@
     }
 
     window.RepBarsInit = initAll;
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ initAll(); setupObserver(); });
-    else { initAll(); setupObserver(); }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ try{ initAll(); setupObserver(); }catch(e){ var pre=document.createElement('pre'); pre.textContent='rep-bars init error: '+(e&&e.message?e.message:e); document.body && document.body.appendChild(pre); } });
+    else { try{ initAll(); setupObserver(); }catch(e){ var pre=document.createElement('pre'); pre.textContent='rep-bars init error: '+(e&&e.message?e.message:e); document.body && document.body.appendChild(pre); } }
   })();
 </script>
 
