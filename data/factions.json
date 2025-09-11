@@ -1,10 +1,11 @@
 {
   "factions": [
-    { "name": "Hauran Civilians", "icon": "https://example.com/icons/civilians.png", "reputation": -10 },
-    { "name": "ICRC", "icon": "https://example.com/icons/icrc.png", "reputation": 50 },
+    { "name": "Hauran Civilians", "icon": "https://victoria.vcsg8.com/date/banners/haurani-civilian-banner.png", "reputation": -10 },
+    { "name": "NEMA", "icon": "https://victoria.vcsg8.com/date/banners/nema-banner.png", "reputation": 50 },
     { "name": "Free Haurani Army", "icon": "https://victoria.vcsg8.com/date/banners/fha-banner.png", "reputation": 70 },
     { "name": "Peaople's Defense Forces", "icon": "https://victoria.vcsg8.com/date/banners/pdf-banner.png", "reputation": 80 },
     { "name": "Hauran Armed Forces", "icon": "https://victoria.vcsg8.com/date/banners/haurani-arab-republic-banner.png", "reputation": -100 },
-    { "name": "Harakat al-Salasyl", "icon": "https://victoria.vcsg8.com/date/banners/harakat_al-salasyl-banner.png", "reputation": -100 }
+    { "name": "Harakat al-Salasyl", "icon": "https://victoria.vcsg8.com/date/banners/harakat_al-salasyl-banner.png", "reputation": -100 },
+    { "name": "Donovia", "icon": "https://victoria.vcsg8.com/date/banners/donovian-banner.png", "reputation": -40 }
   ]
 }
