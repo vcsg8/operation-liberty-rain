@@ -23,7 +23,7 @@
   .nsl table { width: 100%; border-collapse: separate; border-spacing: 0; }
   .nsl thead th { position: sticky; top: 0; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; font-weight: 600; text-align: left; padding: 10px; white-space: nowrap; cursor: pointer; }
   .nsl thead th.sortable:hover { background: #e2e8f0; }
-  .nsl tbody td { border-bottom: 1px solid #f1f5f9; padding: 10px; vertical-align: top; }
+  .nsl tbody td { border-bottom: 1px solid #f1f5f9; padding: 10px; vertical-align: top; white-space: nowrap; }
   .nsl tbody tr:hover { background: #f8fafc; }
   .nsl .muted { color: #64748b; font-size: 12px; }
   .nsl .badge { display: inline-block; padding: 2px 6px; border: 1px solid #cbd5e1; border-radius: 999px; font-size: 12px; background: #fff; }
@@ -188,16 +188,29 @@
         });
     };
 
-    function initAll() {
-      var nodes = document.querySelectorAll('[data-component="nsl"]');
+    function initAll(root) {
+      var scope = root || document;
+      var nodes = scope.querySelectorAll ? scope.querySelectorAll('[data-component="nsl"]') : [];
       for (var i = 0; i < nodes.length; i++) {
         if (!nodes[i]._nsl) nodes[i]._nsl = new NSLTable(nodes[i]);
       }
     }
 
+    function setupObserver() {
+      if (!('MutationObserver' in window)) return;
+      var scheduled = false;
+      var observer = new MutationObserver(function () {
+        if (scheduled) return;
+        scheduled = true;
+        setTimeout(function () { scheduled = false; initAll(); }, 50);
+      });
+      observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
+    }
+
     window.NSLTable = NSLTable;
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAll);
-    else initAll();
+    window.NSLTableInit = initAll;
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ initAll(); setupObserver(); });
+    else { initAll(); setupObserver(); }
   })();
 </script>
 
