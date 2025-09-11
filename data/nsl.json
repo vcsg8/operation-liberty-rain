@@ -10,7 +10,7 @@
     "expiration_dtg": "UFN",
     "reason_authority": "UN",
     "approval_authority": "CJTF",
-    "remarks": "UNESCO World Heritage Site; protected cultural heritage site in Tadmur (Palmyra), Syria. Coordinates reference the archaeological core."
+    "remarks": "UNESCO World Heritage Site; protected cultural heritage site in Tadmur (Palmyra), Hauran. Coordinates reference the archaeological core."
   },
   {
     "nsl_id": "002",
@@ -76,6 +76,45 @@
     "reason_authority": "UN",
     "approval_authority": "CJTF",
     "remarks": "Religious site in Damascus; protected cultural and religious heritage site."
+  },
+  {
+    "nsl_id": "007",
+    "name": "WHO Hauran Office",
+    "category": "Public Health and Welfare Sites",
+    "mgrs": "37SBT 48043 12748",
+    "lat": 33.524650,
+    "lon": 36.287078,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "UN",
+    "approval_authority": "CJTF",
+    "remarks": "World Health Organization office in Damascus, Hauran. Protected public health site."
+  },
+  {
+    "nsl_id": "008",
+    "name": "UN Resident Coordinator Office / Compound",
+    "category": "Civilian Government Services",
+    "mgrs": "37SBT 45066 11451",
+    "lat": 33.512261,
+    "lon": 36.255417,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "UN",
+    "approval_authority": "CJTF",
+    "remarks": "Nerve center for UN humanitarian coordination in Hauran. Houses UN OCHA, UNDP, and other agencies."
+  },
+  {
+    "nsl_id": "009",
+    "name": "ICRC Delegation Compound",
+    "category": "Public Health and Welfare Sites",
+    "mgrs": "37SBT 48229 12146",
+    "lat": 33.519272,
+    "lon": 36.289242,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "Geneva",
+    "approval_authority": "ICRC",
+    "remarks": "International Committee of the Red Cross delegation compound in Damascus, Hauran. Humanitarian facility."
   }
 ]
 
