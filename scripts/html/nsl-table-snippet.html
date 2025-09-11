@@ -1,0 +1,216 @@
+<!--
+  NSL Table Snippet (Wiki.js-compatible)
+
+  Usage:
+  - Paste this entire block into a Wiki.js HTML block.
+  - Add an element where you want the table to appear:
+      <div data-component="nsl" data-src="@https://raw.githubusercontent.com/vcsg8/operation-liberty-rain/main/data/nsl.json"></div>
+    Note: a leading '@' and surrounding whitespace in data-src are allowed and will be stripped.
+  - Multiple instances are supported; each element with data-component="nsl" will auto-initialize.
+-->
+
+
+
+<style>
+  .nsl { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color: #0f172a; }
+  .nsl .nsl-card { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .nsl .nsl-header { display: flex; gap: 8px; align-items: center; padding: 12px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+  .nsl .nsl-title { font-weight: 600; margin-right: auto; }
+  .nsl .nsl-search { width: 280px; max-width: 100%; }
+  .nsl .nsl-input { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; outline: none; }
+  .nsl .nsl-input:focus { border-color: #64748b; box-shadow: 0 0 0 3px rgba(100,116,139,0.15); }
+  .nsl .nsl-table-wrap { overflow: auto; }
+  .nsl table { width: 100%; border-collapse: separate; border-spacing: 0; }
+  .nsl thead th { position: sticky; top: 0; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; font-weight: 600; text-align: left; padding: 10px; white-space: nowrap; cursor: pointer; }
+  .nsl thead th.sortable:hover { background: #e2e8f0; }
+  .nsl tbody td { border-bottom: 1px solid #f1f5f9; padding: 10px; vertical-align: top; }
+  .nsl tbody tr:hover { background: #f8fafc; }
+  .nsl .muted { color: #64748b; font-size: 12px; }
+  .nsl .badge { display: inline-block; padding: 2px 6px; border: 1px solid #cbd5e1; border-radius: 999px; font-size: 12px; background: #fff; }
+  .nsl .controls { display: flex; gap: 8px; align-items: center; }
+  .nsl .count { font-size: 12px; color: #475569; }
+  @media (max-width: 768px) {
+    .nsl thead th, .nsl tbody td { padding: 8px; }
+    .nsl .nsl-header { flex-wrap: wrap; }
+    .nsl .nsl-search { flex: 1 1 100%; }
+  }
+</style>
+
+<script>
+  (function () {
+    function createElement(tag, props, children) {
+      var el = document.createElement(tag);
+      if (props) for (var k in props) { if (k === 'class') el.className = props[k]; else if (k === 'text') el.textContent = props[k]; else el.setAttribute(k, props[k]); }
+      if (children) children.forEach(function (c) { if (typeof c === 'string') el.appendChild(document.createTextNode(c)); else if (c) el.appendChild(c); });
+      return el;
+    }
+
+    function parseDTG(dtg) {
+      if (!dtg || typeof dtg !== 'string') return NaN;
+      if (dtg.toUpperCase() === 'UFN') return Number.POSITIVE_INFINITY;
+      var m = dtg.match(/^([0-9]{2})([0-9]{2})([0-9]{2})Z([A-Z]{3})([0-9]{2}|[0-9]{4})$/i);
+      if (!m) return NaN;
+      var day = parseInt(m[1], 10);
+      var hour = parseInt(m[2], 10);
+      var minute = parseInt(m[3], 10);
+      var monStr = m[4].toUpperCase();
+      var yearStr = m[5];
+      var months = { JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11 };
+      var month = months[monStr];
+      if (month == null) return NaN;
+      var year = yearStr.length === 2 ? (2000 + parseInt(yearStr, 10)) : parseInt(yearStr, 10);
+      var d = new Date(Date.UTC(year, month, day, hour, minute, 0));
+      if (isNaN(d.getTime())) return NaN;
+      return d.getTime();
+    }
+
+    function compare(a, b, key) {
+      var av = a[key];
+      var bv = b[key];
+      if (key === 'lat' || key === 'lon') return (Number(av) || 0) - (Number(bv) || 0);
+      if (key === 'effective_dtg' || key === 'expiration_dtg') return (parseDTG(av) || 0) - (parseDTG(bv) || 0);
+      if (key === 'nsl_id') {
+        var an = parseFloat((av || '').toString().replace(/[^0-9.]/g, ''));
+        var bn = parseFloat((bv || '').toString().replace(/[^0-9.]/g, ''));
+        if (!isNaN(an) && !isNaN(bn)) return an - bn;
+      }
+      av = (av == null ? '' : String(av)).toLowerCase();
+      bv = (bv == null ? '' : String(bv)).toLowerCase();
+      return av < bv ? -1 : av > bv ? 1 : 0;
+    }
+
+    function normalizeRows(data) {
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.items)) return data.items;
+      return [];
+    }
+
+    function sanitizeSrc(raw) {
+      var s = (raw || '').trim();
+      if (s.charAt(0) === '@') s = s.slice(1).trim();
+      return s;
+    }
+
+    function formatCell(key, value) {
+      if (value == null) return '';
+      if (key === 'lat' || key === 'lon') return Number(value).toFixed(6);
+      return String(value);
+    }
+
+    function rowMatchesSearch(columns, row, q) {
+      if (!q) return true;
+      var s = q.toLowerCase();
+      for (var i = 0; i < columns.length; i++) {
+        var v = row[columns[i].key];
+        if (v != null && String(v).toLowerCase().indexOf(s) !== -1) return true;
+      }
+      return false;
+    }
+
+    function NSLTable(el) {
+      this.el = el;
+      this.url = sanitizeSrc(el.getAttribute('data-src'));
+      this.columns = [
+        { key: 'nsl_id', label: 'ID' },
+        { key: 'name', label: 'Name' },
+        { key: 'category', label: 'Category' },
+        { key: 'mgrs', label: 'MGRS' },
+        { key: 'lat', label: 'Lat' },
+        { key: 'lon', label: 'Lon' },
+        { key: 'effective_dtg', label: 'Effective DTG' },
+        { key: 'expiration_dtg', label: 'Expiration DTG' },
+        { key: 'reason_authority', label: 'Reason Authority' },
+        { key: 'approval_authority', label: 'Approval Authority' },
+        { key: 'remarks', label: 'Remarks' }
+      ];
+      this.sort = { key: 'nsl_id', dir: 1 };
+      this.rows = [];
+      this._build();
+      this._load();
+    }
+
+    NSLTable.prototype._build = function () {
+      var root = createElement('div', { class: 'nsl' });
+      this.searchInput = createElement('input', { class: 'nsl-input', type: 'search', placeholder: 'Search NSL…' });
+      this.countSpan = createElement('span', { class: 'count' });
+      var title = createElement('div', { class: 'nsl-title', text: 'No-Strike List (NSL)' });
+      var header = createElement('div', { class: 'nsl-header' }, [
+        title,
+        createElement('div', { class: 'controls' }, [
+          createElement('span', { class: 'muted' }, ['Source: ']),
+          createElement('span', { class: 'badge' }, [this.url || 'inline']),
+          createElement('div', { class: 'nsl-search' }, [this.searchInput]),
+          this.countSpan
+        ])
+      ]);
+
+      this.tableWrap = createElement('div', { class: 'nsl-table-wrap' });
+      this.table = createElement('table');
+      var thead = createElement('thead');
+      this.tbody = createElement('tbody');
+      var trh = createElement('tr');
+
+      var self = this;
+      this.columns.forEach(function (col) {
+        var th = createElement('th', { class: 'sortable', 'data-key': col.key }, [col.label]);
+        th.addEventListener('click', function () {
+          if (self.sort.key === col.key) self.sort.dir *= -1; else { self.sort.key = col.key; self.sort.dir = 1; }
+          self._update();
+        });
+        trh.appendChild(th);
+      });
+      thead.appendChild(trh);
+      this.table.appendChild(thead);
+      this.table.appendChild(this.tbody);
+      this.tableWrap.appendChild(this.table);
+
+      root.appendChild(createElement('div', { class: 'nsl-card' }, [header, this.tableWrap]));
+      this.el.innerHTML = '';
+      this.el.appendChild(root);
+      this.searchInput.addEventListener('input', this._update.bind(this));
+    };
+
+    NSLTable.prototype._update = function () {
+      var self = this;
+      var q = this.searchInput.value || '';
+      var filtered = this.rows.filter(function (r) { return rowMatchesSearch(self.columns, r, q); });
+      filtered.sort(function (a, b) { return compare(a, b, self.sort.key) * self.sort.dir; });
+      this.countSpan.textContent = filtered.length + ' / ' + this.rows.length;
+      this.tbody.innerHTML = '';
+      filtered.forEach(function (r) {
+        var tr = createElement('tr');
+        self.columns.forEach(function (col) {
+          tr.appendChild(createElement('td', null, [formatCell(col.key, r[col.key])]));
+        });
+        self.tbody.appendChild(tr);
+      });
+    };
+
+    NSLTable.prototype._load = function () {
+      var self = this;
+      if (!this.url) { this.rows = []; this._update(); return; }
+      fetch(this.url, { mode: 'cors', cache: 'no-store' })
+        .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+        .then(function (json) { self.rows = normalizeRows(json); self._update(); })
+        .catch(function (err) {
+          var pre = document.createElement('pre');
+          pre.textContent = 'Failed to load NSL: ' + (err && err.message ? err.message : err);
+          self.el.innerHTML = '';
+          self.el.appendChild(pre);
+        });
+    };
+
+    function initAll() {
+      var nodes = document.querySelectorAll('[data-component="nsl"]');
+      for (var i = 0; i < nodes.length; i++) {
+        if (!nodes[i]._nsl) nodes[i]._nsl = new NSLTable(nodes[i]);
+      }
+    }
+
+    window.NSLTable = NSLTable;
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAll);
+    else initAll();
+  })();
+</script>
+
+
