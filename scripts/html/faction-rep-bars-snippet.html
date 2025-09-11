@@ -1,0 +1,101 @@
+<!--
+  Faction Reputation Bars Snippet (Wiki.js-compatible)
+
+  Usage:
+  - Paste this block into a Wiki.js HTML block on your campaign main page.
+  - Add an element:
+      <div data-component="rep-bars" data-src="@https://raw.githubusercontent.com/ORG_OR_USER/operation-liberty-rain/main/data/factions.json"></div>
+    Note: leading '@' and whitespace in data-src are stripped. Multiple instances supported.
+  - Expected JSON (GitHub Raw) format:
+      {
+        "factions": [
+          { "name": "Coalition", "icon": "https://.../coalition.png", "reputation": 45 },
+          { "name": "Civilians", "icon": "https://.../civ.png", "reputation": -10 }
+        ]
+      }
+-->
+
+<style>
+  .rep { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color: #0f172a; }
+  .rep .card { border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); padding: 14px; }
+  .rep .row { display: grid; grid-template-columns: 40px 1fr 60px; gap: 12px; align-items: center; padding: 8px 0; }
+  .rep .row + .row { border-top: 1px solid #f1f5f9; }
+  .rep .icon { width: 40px; height: 40px; border-radius: 6px; object-fit: contain; background: #f8fafc; border: 1px solid #e2e8f0; }
+  .rep .name { font-weight: 600; margin-bottom: 6px; }
+  .rep .bar-wrap { position: relative; width: 100%; height: 16px; background: linear-gradient(90deg, #ef4444 0%, #ef4444 50%, #22c55e 50%, #22c55e 100%); border-radius: 999px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .rep .bar-fill { position: absolute; top: 0; height: 100%; background: rgba(15, 23, 42, 0.85); transition: width 300ms ease; }
+  .rep .val { text-align: right; font-variant-numeric: tabular-nums; color: #334155; }
+  .rep .hdr { display: flex; align-items: center; gap: 8px; padding: 8px 0 12px 0; border-bottom: 1px solid #e2e8f0; margin-bottom: 8px; }
+  .rep .title { font-weight: 700; }
+  .rep .count { margin-left: auto; color: #64748b; font-size: 12px; }
+  .rep .mute { color: #64748b; font-size: 12px; }
+  @media (max-width: 640px) { .rep .row { grid-template-columns: 32px 1fr 48px; } .rep .icon { width: 32px; height: 32px; } }
+</style>
+
+<script>
+  (function(){
+    function sanitizeSrc(s){ s = (s||'').trim(); if(s.charAt(0)==='@') s = s.slice(1).trim(); return s; }
+    function clamp(n,min,max){ return n<min?min:n>max?max:n; }
+    function fmt(n){ return (n>0?'+':'') + n; }
+    function el(tag, props, kids){ var d=document.createElement(tag); if(props){ for(var k in props){ if(k==='class') d.className=props[k]; else if(k==='text') d.textContent=props[k]; else d.setAttribute(k, props[k]); } } if(kids){ for(var i=0;i<kids.length;i++){ var c=kids[i]; d.appendChild(typeof c==='string'?document.createTextNode(c):c); } } return d; }
+
+    function render(container, factions){
+      var root = el('div', { class: 'rep' });
+      var header = el('div', { class: 'hdr' }, [ el('div', { class: 'title', text: 'Faction Reputation' }), el('span', { class: 'count', text: factions.length + ' factions' }) ]);
+      var card = el('div', { class: 'card' }, [ header ]);
+      factions.forEach(function(f){
+        var name = f.name || 'Faction';
+        var icon = f.icon || '';
+        var rep = clamp(Math.round(Number(f.reputation)||0), -100, 100);
+        var leftWidth = (rep <= 0 ? (100 + rep) : 100); // background split at 50%
+        var fillWidth = (rep + 100) / 2; // map [-100,100] -> [0,100]
+        var row = el('div', { class: 'row' });
+        row.appendChild(el('img', { class: 'icon', src: icon, alt: name }));
+        var mid = el('div');
+        mid.appendChild(el('div', { class: 'name', text: name }));
+        var bar = el('div', { class: 'bar-wrap' });
+        var fill = el('div', { class: 'bar-fill' });
+        fill.style.width = fillWidth + '%';
+        bar.appendChild(fill);
+        mid.appendChild(bar);
+        row.appendChild(mid);
+        row.appendChild(el('div', { class: 'val', text: fmt(rep) }));
+        card.appendChild(row);
+      });
+      root.appendChild(card);
+      container.innerHTML='';
+      container.appendChild(root);
+    }
+
+    function normalize(data){
+      if(Array.isArray(data)) return data;
+      if(data && Array.isArray(data.factions)) return data.factions;
+      return [];
+    }
+
+    function RepBars(el){ this.el=el; this.url=sanitizeSrc(el.getAttribute('data-src')); this.rows=[]; this.load(); }
+    RepBars.prototype.load=function(){
+      var self=this; if(!this.url){ render(this.el, []); return; }
+      fetch(this.url, { mode:'cors', cache:'no-store' })
+        .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+        .then(function(j){ self.rows = normalize(j); render(self.el, self.rows); })
+        .catch(function(e){ var pre=document.createElement('pre'); pre.textContent='Failed to load factions: '+(e&&e.message?e.message:e); self.el.innerHTML=''; self.el.appendChild(pre); });
+    };
+
+    function initAll(root){
+      var scope=root||document; var nodes=scope.querySelectorAll('[data-component="rep-bars"]');
+      for(var i=0;i<nodes.length;i++){ if(!nodes[i]._repBars) nodes[i]._repBars = new RepBars(nodes[i]); }
+    }
+
+    function setupObserver(){
+      if(!('MutationObserver' in window)) return; var scheduled=false; var obs=new MutationObserver(function(){ if(scheduled) return; scheduled=true; setTimeout(function(){ scheduled=false; initAll(); }, 50); });
+      obs.observe(document.documentElement||document.body, { childList:true, subtree:true });
+    }
+
+    window.RepBarsInit = initAll;
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ initAll(); setupObserver(); });
+    else { initAll(); setupObserver(); }
+  })();
+</script>
+
+

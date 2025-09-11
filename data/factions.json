@@ -1,0 +1,9 @@
+{
+  "factions": [
+    { "name": "Coalition", "icon": "https://example.com/icons/coalition.png", "reputation": 45 },
+    { "name": "Civilians", "icon": "https://example.com/icons/civilians.png", "reputation": -10 },
+    { "name": "Neutral Traders", "icon": "https://example.com/icons/traders.png", "reputation": 0 }
+  ]
+}
+
+
