@@ -22,8 +22,8 @@
   .rep .row + .row { border-top: 1px solid #f1f5f9; }
   .rep .icon { width: 40px; height: 40px; border-radius: 6px; object-fit: contain; background: #f8fafc; border: 1px solid #e2e8f0; }
   .rep .name { font-weight: 600; margin-bottom: 6px; }
-  .rep .bar-wrap { position: relative; width: 100%; height: 16px; background: linear-gradient(90deg, #ef4444 0%, #ef4444 50%, #22c55e 50%, #22c55e 100%); border-radius: 999px; overflow: hidden; border: 1px solid #e2e8f0; }
-  .rep .bar-fill { position: absolute; top: 0; height: 100%; background: rgba(15, 23, 42, 0.85); transition: width 300ms ease; }
+  .rep .bar-wrap { position: relative; width: 100%; height: 16px; background: #2a2033; border-radius: 999px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .rep .seg { position: absolute; top: 0; height: 100%; transition: all 250ms ease; }
   .rep .val { text-align: right; font-variant-numeric: tabular-nums; color: #334155; }
   .rep .hdr { display: flex; align-items: center; gap: 8px; padding: 8px 0 12px 0; border-bottom: 1px solid #e2e8f0; margin-bottom: 8px; }
   .rep .title { font-weight: 700; }
@@ -47,16 +47,23 @@
         var name = f.name || 'Faction';
         var icon = f.icon || '';
         var rep = clamp(Math.round(Number(f.reputation)||0), -100, 100);
-        var leftWidth = (rep <= 0 ? (100 + rep) : 100); // background split at 50%
-        var fillWidth = (rep + 100) / 2; // map [-100,100] -> [0,100]
+        // Build segments: base (left of zero), red (negative), green (positive), base remainder
+        var negPct = rep < 0 ? Math.abs(rep) : 0;      // 0..100
+        var posPct = rep > 0 ? rep : 0;                // 0..100
+        var baseLeftPct = 50 - Math.min(50, negPct/2); // left base keeps 50% minus taken by red
+        var baseRightPct = 50 - Math.min(50, posPct/2);// right base keeps 50% minus taken by green
         var row = el('div', { class: 'row' });
         row.appendChild(el('img', { class: 'icon', src: icon, alt: name }));
         var mid = el('div');
         mid.appendChild(el('div', { class: 'name', text: name }));
         var bar = el('div', { class: 'bar-wrap' });
-        var fill = el('div', { class: 'bar-fill' });
-        fill.style.width = fillWidth + '%';
-        bar.appendChild(fill);
+        // segments in order from left to right
+        var x = 0;
+        function seg(widthPct, color){ if(widthPct <= 0) return; var s = el('div', { class: 'seg' }); s.style.left = x + '%'; s.style.width = widthPct + '%'; s.style.background = color; x += widthPct; bar.appendChild(s); }
+        seg(baseLeftPct, '#2a2033');                    // base left
+        seg(negPct/2, '#ef4444');                       // red for negative
+        seg(posPct/2, '#22c55e');                       // green for positive
+        seg(baseRightPct, '#2a2033');                   // base right remainder
         mid.appendChild(bar);
         row.appendChild(mid);
         row.appendChild(el('div', { class: 'val', text: fmt(rep) }));
