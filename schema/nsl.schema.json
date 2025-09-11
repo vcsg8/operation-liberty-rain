@@ -1,0 +1,122 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "No-Strike List (NSL) Entry",
+    "type": "object",
+    "properties": {
+      "nsl_id": {
+        "type": "string",
+        "description": "Unique identifier for the NSL entry (e.g., 001, 002)."
+      },
+      "name": {
+        "type": "string",
+        "description": "Name or description of the protected site or entity."
+      },
+      "category": {
+        "type": "string",
+        "enum": [
+          "Military Hospital",
+          "Power Plant",
+          "Water Distribution",
+          "Water Treatment",
+          "Airports",
+          "Seaports",
+          "Bridges",
+          "Chemical Processing Plants",
+          "Schools and Universities",
+          "Financial Institutions",
+          "Cultural Institutions",
+          "Civilian Government Services",
+          "Public Safety and Emergency Services",
+          "Critical Urban Infrastructure",
+          "Public Health and Welfare Sites",
+          "Justice and Law Enforcement Facilities",
+          "Cultural Heritage Sites",
+          "Religious Sites",
+          "National Monuments",
+          "Archaeological Sites",
+          "Protected Wildlife Areas",
+          "Other"
+        ],
+        "description": "Category/type of site protected from targeting."
+      },
+      "mgrs": {
+        "type": "string",
+        "pattern": "^[0-9]{1,2}[C-HJ-NP-X][A-Z]{2}\\s?[0-9]{1,5}\\s?[0-9]{1,5}$",
+        "description": "MGRS coordinate string for location."
+      },
+      "lat": {
+        "type": "number",
+        "minimum": -90,
+        "maximum": 90,
+        "description": "Latitude in decimal degrees."
+      },
+      "lon": {
+        "type": "number",
+        "minimum": -180,
+        "maximum": 180,
+        "description": "Longitude in decimal degrees."
+      },
+      "effective_dtg": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Effective date-time (ISO 8601, e.g., 2025-09-11T03:00:00Z)."
+      },
+      "expiration_dtg": {
+        "oneOf": [
+          { "type": "string", "format": "date-time" },
+          { "type": "string", "enum": ["UFN"] }
+        ],
+        "description": "Expiration in ISO 8601 or 'UFN' (Until Further Notice)."
+      },
+      "reason_authority": {
+        "type": "string",
+        "enum": [
+          "LOAC",
+          "Geneva",
+          "Hague",
+          "Vienna",
+          "DoD",
+          "CJTF",
+          "UN",
+          "Other"
+        ],
+        "description": "Legal or policy authority that justifies no-strike status."
+      },
+      "approval_authority": {
+        "type": "string",
+        "enum": [
+          "CJTF",
+          "DOS",
+          "UN",
+          "JFLCC",
+          "JFACC",
+          "JFMCC",
+          "JFSOCC",
+          "SECDEF",
+          "SACEUR",
+          "CENTCOM",
+          "POTUS",
+          "ICRC",
+          "Other"
+        ],
+        "description": "Authority that approved the NSL entry."
+      },
+      "remarks": {
+        "type": "string",
+        "description": "Additional notes or special instructions."
+      }
+    },
+    "required": [
+      "nsl_id",
+      "name",
+      "category",
+      "mgrs",
+      "lat",
+      "lon",
+      "effective_dtg",
+      "expiration_dtg",
+      "reason_authority",
+      "approval_authority"
+    ]
+  }
+  
