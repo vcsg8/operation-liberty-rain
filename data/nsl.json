@@ -63,6 +63,19 @@
     "reason_authority": "UN",
     "approval_authority": "CJTF",
     "remarks": "Civilian hospital in southern Damascus; protected public health site."
+  },
+  {
+    "nsl_id": "006",
+    "name": "St Mary's Cathedral",
+    "category": "Religious Sites",
+    "mgrs": "37SBT 50300 11063",
+    "lat": 33.510006,
+    "lon": 36.311819,
+    "effective_dtg": "2025-09-11T00:00:00Z",
+    "expiration_dtg": "UFN",
+    "reason_authority": "UN",
+    "approval_authority": "CJTF",
+    "remarks": "Religious site in Damascus; protected cultural and religious heritage site."
   }
 ]
 
