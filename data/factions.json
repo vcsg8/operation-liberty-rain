@@ -7,6 +7,7 @@
     { "name": "Hauran Armed Forces", "icon": "https://victoria.vcsg8.com/date/banners/haurani-arab-republic-banner.png", "reputation": -100 },
     { "name": "Harakat al-Salasyl (HAS)", "icon": "https://victoria.vcsg8.com/date/banners/harakat_al-salasyl-banner.png", "reputation": -100 },
     { "name": "Donovia", "icon": "https://victoria.vcsg8.com/date/banners/donovian-banner.png", "reputation": -40 },
-    { "name": "Gilead", "icon": "https://victoria.vcsg8.com/date/banners/gilead-banner.png", "reputation": 95 }
+    { "name": "Gilead", "icon": "https://victoria.vcsg8.com/date/banners/gilead-banner.png", "reputation": 95 },
+    { "name": "Byzantaura", "icon": "https://victoria.vcsg8.com/date/banners/byzantaura-banner.png", "reputation": 75 }
   ]
 }
